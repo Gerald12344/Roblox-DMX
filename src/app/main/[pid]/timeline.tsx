@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { main } from "./page";
+import { ProjectSettings, main } from "./page";
+import { Button, Select } from "@mantine/core";
+import CreateUniverseModal from "./components/createUniverse";
 
 const widthOfSong = 12000;
 const canvasHeight = 300;
@@ -14,6 +16,10 @@ export default function Timeline({
   left,
   right,
   changeInfo,
+  projectSettings,
+  universe,
+  setUniverse,
+  loadUniverses,
 }: {
   loadEverything: boolean;
   requestSeek: (x: number) => void;
@@ -24,7 +30,13 @@ export default function Timeline({
   left: () => void;
   right: () => void;
   changeInfo: (x: main) => void;
+  projectSettings: ProjectSettings | undefined;
+  universe: { name: string; id: number } | undefined;
+  setUniverse: (x: { name: string; id: number }) => void;
+  loadUniverses: () => void;
 }) {
+  const [createUniverseOpen, setCreateUniverseOpen] = useState(false);
+
   useEffect(() => {
     if (!loadEverything) return;
     // AUDIO CONTEXT
@@ -80,7 +92,6 @@ export default function Timeline({
     // MUSIC DISPLAY
     function displayBuffer(buff: AudioBuffer /* is an AudioBuffer */) {
       let leftChannel = buff.getChannelData(0); // Float32Array describing left channel
-      let lineOpacity = canvasWidth / leftChannel.length;
 
       if (context === null) return;
 
@@ -96,7 +107,7 @@ export default function Timeline({
         let y = (leftChannel[i] * canvasHeight) / 2;
         context.beginPath();
         context.moveTo(x, 0);
-        context.lineTo(x + 1, y);
+        context.lineTo(x + 1, y * 2);
         context.stroke();
       }
       context.restore();
@@ -111,7 +122,7 @@ export default function Timeline({
     }
 
     console.log("loading music");
-    loadMusic("./testTrack.mp3");
+    loadMusic("../testTrack.mp3");
   }, [loadEverything]);
 
   useEffect(() => {
@@ -128,6 +139,7 @@ export default function Timeline({
     window.addEventListener("click", (e) => {
       // check if mouse is inside canvas holder
       let canvasHolder = document.getElementById("outerHolder");
+
       if (!canvasHolder) return;
       let rect = canvasHolder.getBoundingClientRect();
       if (
@@ -188,43 +200,78 @@ export default function Timeline({
   findLatestBehindMe();
 
   return (
-    <div className="w-full overflow-x-auto" id="outerHolder">
-      <div>
-        <h1>Universes:</h1>
-        <div>
-          <button className="bg-green-500 p-2 rounded-lg">Create New</button>
+    <div className="w-full overflow-x-auto">
+      <div className="w-full items-center justify-center relative">
+        <h1 className="text-3xl text-center">Timeline</h1>
+        <div className="absolute top-0 flex flex-row">
+          <Select
+            comboboxProps={{
+              position: "top",
+              middlewares: { flip: false, shift: false },
+            }}
+            value={`${universe?.id}`}
+            data={
+              projectSettings?.universes.map((e) => {
+                return {
+                  label: e.name,
+                  value: `${e.id}`,
+                };
+              }) ?? []
+            }
+            onChange={(e) => {
+              setUniverse({
+                name:
+                  projectSettings?.universes.find(
+                    (x) => x.id === parseInt(e ?? "0")
+                  )?.name ?? "",
+                id: parseInt(e ?? "0", 10),
+              });
+            }}
+            placeholder="Select a Universe"
+          ></Select>
+          <Button onClick={() => setCreateUniverseOpen(true)} className="ml-2">
+            Create Universe
+          </Button>
+          <CreateUniverseModal
+            open={createUniverseOpen}
+            close={() => setCreateUniverseOpen(false)}
+            refresh={loadUniverses}
+            universes={projectSettings}
+          />
         </div>
       </div>
-      <div id="canvasHolder" className="relative mt-4 min-h-[300px]">
-        <div
-          style={{
-            height: canvasHeight + "px",
-            left: `${(currentTime / duration) * widthOfSong}px`,
-          }}
-          className="absolute bg-red-400 w-[1px] top-0"
-        ></div>
+      <div id="outerHolder">
+        <div id="canvasHolder" className="relative mt-4 min-h-[300px]">
+          <div
+            style={{
+              height: canvasHeight + "px",
+              left: `${(currentTime / duration) * widthOfSong}px`,
+            }}
+            className="absolute bg-red-400 w-[1px] top-0"
+          ></div>
 
-        {loadTimeQueus()
-          .sort((a, b) => a.time - b.time)
-          .map((q, i) => {
-            return (
-              <div
-                style={{
-                  left: widthOfSong * (q.time / duration),
-                  height: canvasHeight + "px",
-                }}
-                className={` ${
-                  selectedTime == q.time ? "w-[2px] bg-pink-400" : "w-[1px]"
-                } absolute bg-blue-400  top-0`}
-              ></div>
-            );
-          })}
+          {loadTimeQueus()
+            .sort((a, b) => a.time - b.time)
+            .map((q, i) => {
+              return (
+                <div
+                  style={{
+                    left: widthOfSong * (q.time / duration),
+                    height: canvasHeight + "px",
+                  }}
+                  className={` ${
+                    selectedTime == q.time ? "w-[2px] bg-pink-400" : "w-[1px]"
+                  } absolute bg-blue-400  top-0`}
+                ></div>
+              );
+            })}
 
-        <div
-          id={"theMouse"}
-          className="absolute bg-green-400 w-[1px]  top-0"
-          style={{ height: canvasHeight + "px" }}
-        ></div>
+          <div
+            id={"theMouse"}
+            className="absolute bg-green-400 w-[1px]  top-0"
+            style={{ height: canvasHeight + "px" }}
+          ></div>
+        </div>
       </div>
     </div>
   );

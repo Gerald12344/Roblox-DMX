@@ -28,8 +28,8 @@ export default function Choose() {
 
   return (
     <div className="flex items-center justify-center w-[100vw] h-[100vh] flex-col">
-      <h1 className="text-3xl">Choose a Project:</h1>
-      <div>
+      <h1 className="text-3xl mt-4">Choose a Project:</h1>
+      <div className="flex flex-row flex-wrap items-center justify-center max-h-[80vh] overflow-auto">
         {scenarios.map((scenario) => (
           <ProjectCard
             key={scenario.id}

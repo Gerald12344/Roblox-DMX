@@ -70,17 +70,17 @@ export default function EditScene({
 
   return (
     <div>
+      <button
+        className="p-2 bg-orange-500 m-2 rounded-lg ml-4 absolute right-0 top-0"
+        onClick={save}
+      >
+        Save Scene
+      </button>
       <div className="flex flex-row  items-center">
-        <h1>Light Selector: </h1>
-        <button
-          className="p-2 bg-orange-500 m-1 rounded-lg ml-4"
-          onClick={save}
-        >
-          Save Changes
-        </button>
+        <h1>Light Selector ({currentLight}): </h1>
       </div>
       <div>
-        {Array.from({ length: lights }, (_, i) => (
+        {Array.from({ length: 20 }, (_, i) => (
           <button
             className={`py-2 px-4 ${
               currentLight === i + 1 ? "bg-red-500" : "bg-green-500"
@@ -90,6 +90,12 @@ export default function EditScene({
             {i + 1}
           </button>
         ))}
+        <input
+          placeholder="Light Id Number..."
+          className="py-2 px-4 m-1 rounded-lg"
+          type="number"
+          onChange={(e) => changeLight(parseInt(e.target.value))}
+        />
       </div>
 
       <div className="flex flex-row">

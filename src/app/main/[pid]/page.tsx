@@ -4,6 +4,9 @@ import { useEffect, useState } from "react";
 import EditScene from "./editScene";
 import Timeline from "./timeline";
 import axios from "axios";
+import ProjectControls from "./ProjectControls";
+import { Button } from "@mantine/core";
+import Link from "next/link";
 
 export interface main {
   [key: number | string]: {
@@ -12,7 +15,7 @@ export interface main {
   };
 }
 
-const lights = 24;
+const lights = 100;
 
 export { lights };
 
@@ -26,15 +29,22 @@ for (let i = 1; i <= lights; i++) {
 
 let audioMine: HTMLAudioElement;
 
-export default function Page() {
+export interface ProjectSettings {
+  title: string;
+  description: string;
+  id: string;
+  universes: { name: string; id: number }[];
+}
+
+export default function Page({ params }: { params: { pid: string } }) {
   const [currentData, setCurrentData] = useState<main>(empty);
   const [loadEverything, setLoadEverything] = useState(false);
   const [duration, setDuration] = useState(0);
   const [pos, setPos] = useState(0);
-
-  const [universe, setUniverse] = useState(1);
-
+  const [universe, setUniverse] = useState<{ name: string; id: number }>();
   const [selectedTime, setSelectedTime] = useState(-1);
+
+  const [projectSettings, setProjectSettings] = useState<ProjectSettings>();
 
   let changeCurrent = (x: main) => {
     setCurrentData(x);
@@ -44,7 +54,21 @@ export default function Page() {
     });
   };
 
+  let loadUniverses = () => {
+    let id = params.pid;
+    if (!id) return;
+    // get projects
+    let projects = localStorage.getItem("projects");
+    if (!projects) return;
+    let parsed = JSON.parse(projects).projects;
+    let project = parsed.find((x: any) => x.id === id);
+
+    setProjectSettings(project);
+  };
+
   useEffect(() => {
+    loadUniverses();
+    setUniverse({ name: "DEFAULT - 0", id: 0 });
     audioMine = new Audio();
     audioMine.src = "./testTrack.mp3";
     audioMine.load();
@@ -63,9 +87,8 @@ export default function Page() {
       "keydown",
       function (e) {
         if (
-          ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(
-            e.code
-          ) > -1
+          ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].indexOf(e.code) >
+          -1
         ) {
           e.preventDefault();
         }
@@ -76,86 +99,28 @@ export default function Page() {
 
   return (
     <div className="grid grid-rows-2 grid-cols-2 w-[100vw] h-[100vh]">
-      <div className="p-2 border-2 border-neutral-700 border-solid rounded-md m-2 flex items-center justify-center flex-col">
+      <div className="p-2 border-2 border-neutral-700 border-solid rounded-md m-2 flex items-center justify-center w-[98%] flex-col">
         <h1 className="text-3xl">Main Controls</h1>
-        <div className="flex flex-row items-center justify-between">
-          <div className="flex-grow flex items-center justify-center flex-col space-y-8">
-            <div>
-              <h1 className="text-center text-lg">Track Controls</h1>
-              <button
-                className="bg-red-500 p-4"
-                onClick={(x) => {
-                  audioMine.play();
-                }}
-              >
-                Play
-              </button>
-              <button
-                className="bg-blue-500 p-4"
-                onClick={(x) => {
-                  audioMine.pause();
-                }}
-              >
-                Pause
-              </button>
-              <button
-                className="bg-green-500 p-4"
-                onClick={(x) => {
-                  audioMine.currentTime = 0;
-                  audioMine.play();
-                }}
-              >
-                Stop
-              </button>
-              <button
-                className="bg-yellow-500 p-4"
-                onClick={(x) => {
-                  audioMine.currentTime = 0;
-                }}
-              >
-                Restart
-              </button>
-            </div>
-            <div>
-              <h1 className="text-center text-lg">Queue Controls</h1>
-              <button
-                className="bg-blue-500 p-4"
-                onClick={() => {
-                  window.localStorage.setItem(
-                    `timeCode_${audioMine.currentTime}`,
-                    JSON.stringify({
-                      time: audioMine.currentTime,
-                      data: currentData,
-                    })
-                  );
-                }}
-              >
-                Create New
-              </button>
-              <button
-                className="bg-red-500 p-4"
-                onClick={() => {
-                  window.localStorage.removeItem(`timeCode_${selectedTime}`);
-                  setPos((x) => x + 0.0001);
-                }}
-              >
-                Delete Current
-              </button>
-            </div>
-            <div>
-              <h1 className="text-center text-lg">Song Controls</h1>
-              <button
-                className="bg-green-500 p-4"
-                onClick={() => setLoadEverything(true)}
-              >
-                Load Song and Queues
-              </button>
-            </div>
+        <div className="flex flex-row items-between w-full justify-center">
+          <div className="flex items-center flex-col justify-center h-full flex-grow">
+            <h1 className="text-2xl">{projectSettings?.title}</h1>
+            <p>{projectSettings?.description}</p>
+            <Link href="/main" className="mt-4">
+              <Button>Change Project</Button>
+            </Link>
           </div>
+          <ProjectControls
+            audioMine={audioMine}
+            currentData={currentData}
+            setLoadEverything={setLoadEverything}
+            setPos={setPos}
+            selectedTime={selectedTime}
+          />
         </div>
       </div>
-      <div className="p-2 border-2 border-neutral-700 border-solid rounded-md m-2 flex items-center justify-center flex-col">
-        <h1 className="text-3xl">Edit Scene</h1>
+
+      <div className="p-2  border-2 border-neutral-700 border-solid rounded-md m-2 flex items-center justify-center flex-col relative">
+        <h1 className="text-3xl">Edit Scene - ({universe?.name})</h1>
         <div className="flex-grow flex items-center justify-center flex-col space-y-8">
           <EditScene
             selectedTime={selectedTime}
@@ -187,6 +152,10 @@ export default function Page() {
               audioMine.currentTime += 0.01;
               setPos(audioMine.currentTime);
             }}
+            setUniverse={setUniverse}
+            universe={universe}
+            projectSettings={projectSettings}
+            loadUniverses={loadUniverses}
           />
         </div>
       </div>

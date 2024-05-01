@@ -24,6 +24,12 @@ export default function NewProjectModal({
       id: v4(),
       title,
       description,
+      universes: [
+        {
+          name: "DEFAULT - 0",
+          id: 0,
+        },
+      ],
     });
     localStorage.setItem("projects", JSON.stringify({ projects: newProjects }));
     refresh();
@@ -40,7 +46,6 @@ export default function NewProjectModal({
         label="Project Title"
         required
         placeholder="Enter Project Title..."
-        value={title}
         onChange={(e) => setTitle(e.currentTarget.value)}
       />
       <TextInput
@@ -48,7 +53,6 @@ export default function NewProjectModal({
         required
         className="mt-2"
         placeholder="Enter Project Description..."
-        value={description}
         onChange={(e) => setDescription(e.currentTarget.value)}
       />
 
