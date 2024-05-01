@@ -12,10 +12,11 @@ export interface main {
   [key: number | string]: {
     data: number[];
     id: number;
+    universe: number;
   };
 }
 
-const lights = 100;
+const lights = 40;
 
 export { lights };
 
@@ -24,6 +25,7 @@ for (let i = 1; i <= lights; i++) {
   empty[i] = {
     data: [0, 0, 0, 0, 0, 0, 0, 255],
     id: i,
+    universe: 0,
   };
 }
 
@@ -116,6 +118,7 @@ export default function Page({ params }: { params: { pid: string } }) {
             currentData={currentData}
             setLoadEverything={setLoadEverything}
             setPos={setPos}
+            project={projectSettings}
             selectedTime={selectedTime}
           />
         </div>
@@ -125,6 +128,7 @@ export default function Page({ params }: { params: { pid: string } }) {
         <h1 className="text-3xl">Edit Scene - ({universe?.name})</h1>
         <div className="flex-grow flex items-center justify-center flex-col space-y-8">
           <EditScene
+            project={projectSettings}
             universe={universe}
             selectedTime={selectedTime}
             currentSceneInfo={currentData}

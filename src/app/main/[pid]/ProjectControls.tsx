@@ -1,5 +1,6 @@
 import { SetStateAction } from "react";
 import { main } from "./page";
+import { DownloadFile } from "./components/downloadFile";
 
 export default function ProjectControls({
   audioMine,
@@ -8,6 +9,7 @@ export default function ProjectControls({
   setPos,
   selectedTime,
   universe,
+  project,
 }: {
   audioMine: HTMLAudioElement;
   currentData: main;
@@ -15,6 +17,7 @@ export default function ProjectControls({
   setPos: (value: SetStateAction<number>) => void;
   selectedTime: number;
   universe: { name: string; id: number } | undefined;
+  project: { id: string; title: string; universes: any[] } | undefined;
 }) {
   return (
     <>
@@ -62,10 +65,11 @@ export default function ProjectControls({
               className="bg-blue-500 p-4 rounded-l-lg hover:bg-blue-600 hover:cursor-pointer"
               onClick={() => {
                 window.localStorage.setItem(
-                  `${universe?.id}_timeCode_${audioMine.currentTime}`,
+                  `${project?.id}_${universe?.id}_timeCode_${audioMine.currentTime}`,
 
                   JSON.stringify({
                     time: audioMine.currentTime,
+                    universe: universe?.id,
                     data: currentData,
                   })
                 );
@@ -77,7 +81,7 @@ export default function ProjectControls({
               className="bg-red-500 p-4 rounded-r-lg hover:bg-red-600 hover:cursor-pointer"
               onClick={() => {
                 window.localStorage.removeItem(
-                  `${universe?.id}_timeCode_${selectedTime}`
+                  `${project?.id}_${universe?.id}_timeCode_${selectedTime}`
                 );
                 setPos((x) => x + 0.0001);
               }}
@@ -101,7 +105,13 @@ export default function ProjectControls({
             </button>
             <button
               className="bg-orange-500 p-4 hover:bg-orange-600 hover:cursor-pointer rounded-r-lg"
-              onClick={() => setLoadEverything(true)}
+              onClick={() =>
+                DownloadFile(
+                  project?.id ?? "0",
+                  project?.title ?? "",
+                  project?.universes.length ?? 1
+                )
+              }
             >
               Export for Production
             </button>

@@ -166,11 +166,11 @@ export default function Timeline({
     // fetch everything from local storage that starts with timeCode_
     let keys = Object.keys(window.localStorage);
     let timeKeys = keys.filter((key) =>
-      key.startsWith(universe?.id + "_timeCode_")
+      key.startsWith(projectSettings?.id + "_" + universe?.id + "_timeCode_")
     );
     let timeQueues = timeKeys.map((key) => {
       return {
-        time: parseFloat(key.split("_")[2]),
+        time: parseFloat(key.split("_")[3]),
         data: JSON.parse(window.localStorage.getItem(key) as any),
       };
     });
@@ -194,7 +194,7 @@ export default function Timeline({
     if (selectedTime !== latest.time) {
       changeSelectedTime(latest.time);
       let start = window.localStorage.getItem(
-        `${universe?.id}_timeCode_${latest.time}`
+        `${projectSettings?.id}_${universe?.id}_timeCode_${latest.time}`
       ) as any;
 
       console.log("start", start);
@@ -207,7 +207,7 @@ export default function Timeline({
 
   return (
     <div className="w-full overflow-x-auto">
-      <div className="w-full items-center justify-center relative">
+      <div className="w-full items-center justify-center relative max-w-[95vw]">
         <h1 className="text-3xl text-center">Timeline</h1>
         <div className="absolute top-0 flex flex-row">
           <Select
@@ -246,7 +246,7 @@ export default function Timeline({
           />
         </div>
       </div>
-      <div id="outerHolder">
+      <div id="outerHolder" className="overflow-auto max-w-[98vw]">
         <div id="canvasHolder" className="relative mt-4 min-h-[300px]">
           <div
             style={{
