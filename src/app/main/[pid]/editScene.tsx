@@ -6,10 +6,12 @@ export default function EditScene({
   currentSceneInfo,
   selectedTime,
   changeCurrent,
+  universe,
 }: {
   currentSceneInfo: main;
   selectedTime: number;
   changeCurrent: (x: main) => void;
+  universe: { name: string; id: number } | undefined;
 }) {
   const [currentLight, setCurrentLight] = useState(1);
   const lightInfo = currentSceneInfo[currentLight];
@@ -24,7 +26,7 @@ export default function EditScene({
 
   const save = () => {
     window.localStorage.setItem(
-      `timeCode_${selectedTime}`,
+      `${universe?.id}_timeCode_${selectedTime}`,
       JSON.stringify({
         time: selectedTime,
         data: currentSceneInfo,

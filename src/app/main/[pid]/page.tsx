@@ -70,12 +70,13 @@ export default function Page({ params }: { params: { pid: string } }) {
     loadUniverses();
     setUniverse({ name: "DEFAULT - 0", id: 0 });
     audioMine = new Audio();
-    audioMine.src = "./testTrack.mp3";
+    audioMine.src = "../testTrack.mp3";
     audioMine.load();
     let doc = document.getElementById("pos");
     let line = document.getElementById("theLine");
     if (doc) doc.innerText = audioMine.currentTime.toString();
     audioMine.addEventListener("loadedmetadata", () => {
+      console.log("loaded, duration", audioMine.duration);
       setDuration(audioMine.duration);
     });
 
@@ -110,6 +111,7 @@ export default function Page({ params }: { params: { pid: string } }) {
             </Link>
           </div>
           <ProjectControls
+            universe={universe}
             audioMine={audioMine}
             currentData={currentData}
             setLoadEverything={setLoadEverything}
@@ -123,6 +125,7 @@ export default function Page({ params }: { params: { pid: string } }) {
         <h1 className="text-3xl">Edit Scene - ({universe?.name})</h1>
         <div className="flex-grow flex items-center justify-center flex-col space-y-8">
           <EditScene
+            universe={universe}
             selectedTime={selectedTime}
             currentSceneInfo={currentData}
             changeCurrent={changeCurrent}
@@ -141,7 +144,7 @@ export default function Page({ params }: { params: { pid: string } }) {
             duration={duration}
             requestSeek={(x: number) => {
               audioMine.currentTime = x * audioMine.duration;
-              console.log(x * duration, x, duration);
+
               setPos(x * audioMine.duration);
             }}
             left={() => {

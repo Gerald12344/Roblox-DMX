@@ -7,12 +7,14 @@ export default function ProjectControls({
   setLoadEverything,
   setPos,
   selectedTime,
+  universe,
 }: {
   audioMine: HTMLAudioElement;
   currentData: main;
   setLoadEverything: (value: SetStateAction<boolean>) => void;
   setPos: (value: SetStateAction<number>) => void;
   selectedTime: number;
+  universe: { name: string; id: number } | undefined;
 }) {
   return (
     <>
@@ -60,7 +62,8 @@ export default function ProjectControls({
               className="bg-blue-500 p-4 rounded-l-lg hover:bg-blue-600 hover:cursor-pointer"
               onClick={() => {
                 window.localStorage.setItem(
-                  `timeCode_${audioMine.currentTime}`,
+                  `${universe?.id}_timeCode_${audioMine.currentTime}`,
+
                   JSON.stringify({
                     time: audioMine.currentTime,
                     data: currentData,
@@ -73,7 +76,9 @@ export default function ProjectControls({
             <button
               className="bg-red-500 p-4 rounded-r-lg hover:bg-red-600 hover:cursor-pointer"
               onClick={() => {
-                window.localStorage.removeItem(`timeCode_${selectedTime}`);
+                window.localStorage.removeItem(
+                  `${universe?.id}_timeCode_${selectedTime}`
+                );
                 setPos((x) => x + 0.0001);
               }}
             >

@@ -165,13 +165,17 @@ export default function Timeline({
   let loadTimeQueus = () => {
     // fetch everything from local storage that starts with timeCode_
     let keys = Object.keys(window.localStorage);
-    let timeKeys = keys.filter((key) => key.startsWith("timeCode_"));
+    let timeKeys = keys.filter((key) =>
+      key.startsWith(universe?.id + "_timeCode_")
+    );
     let timeQueues = timeKeys.map((key) => {
       return {
-        time: parseFloat(key.split("_")[1]),
+        time: parseFloat(key.split("_")[2]),
         data: JSON.parse(window.localStorage.getItem(key) as any),
       };
     });
+
+    console.log(timeQueues);
 
     return timeQueues;
   };
@@ -189,7 +193,9 @@ export default function Timeline({
 
     if (selectedTime !== latest.time) {
       changeSelectedTime(latest.time);
-      let start = window.localStorage.getItem(`timeCode_${latest.time}`) as any;
+      let start = window.localStorage.getItem(
+        `${universe?.id}_timeCode_${latest.time}`
+      ) as any;
 
       console.log("start", start);
       changeInfo(JSON.parse(start).data);
@@ -253,6 +259,7 @@ export default function Timeline({
           {loadTimeQueus()
             .sort((a, b) => a.time - b.time)
             .map((q, i) => {
+              console.log("q", q, widthOfSong, duration);
               return (
                 <div
                   style={{
