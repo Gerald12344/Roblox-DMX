@@ -6,10 +6,10 @@ Welcome, this is a small project I am working on to allow creators to create adv
 
 # Running on your own system
 
-[.] - Node >= v21.5.0
-[.] - Npm >= 10.2.4
-[.] - `npm install`
-[.] - `npm run dist`
+- [x] - Node >= v21.5.0
+- [x] - Npm >= 10.2.4
+- [x] - `npm install`
+- [x] - `npm run dist`
 
 Then to run again:
 `node .`
