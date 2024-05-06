@@ -4,6 +4,16 @@
 
 Welcome, this is a small project I am working on to allow creators to create advanced lighting controls for their games, no current lighting system integrates with my system so I have made a moving head and par lights for you to use, in the `./rbxm` folder!
 
+# Running on your own system
+
+[.] - Node >= v21.5.0
+[.] - Npm >= 10.2.4
+[.] - `npm install`
+[.] - `npm run dist`
+
+Then to run again:
+`node .`
+
 # Integrating your own Light System
 
 Do you own a lighting company and think your customers would benefits from our control system, well below we will talk through our protocol!

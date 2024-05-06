@@ -7,6 +7,7 @@ import axios from "axios";
 import ProjectControls from "./ProjectControls";
 import { Button } from "@mantine/core";
 import Link from "next/link";
+import { lights } from "./tempConfig";
 
 export interface main {
   [key: number | string]: {
@@ -15,10 +16,6 @@ export interface main {
     universe: number;
   };
 }
-
-const lights = 40;
-
-export { lights };
 
 let empty: main = {};
 for (let i = 1; i <= lights; i++) {
@@ -75,7 +72,6 @@ export default function Page({ params }: { params: { pid: string } }) {
     audioMine.src = "../testTrack.mp3";
     audioMine.load();
     let doc = document.getElementById("pos");
-    let line = document.getElementById("theLine");
     if (doc) doc.innerText = audioMine.currentTime.toString();
     audioMine.addEventListener("loadedmetadata", () => {
       console.log("loaded, duration", audioMine.duration);

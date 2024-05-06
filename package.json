@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "dist": "next build && node ."
   },
   "dependencies": {
     "@mantine/core": "^7.8.1",
@@ -16,8 +17,7 @@
     "next": "14.2.0",
     "react": "^18",
     "react-dom": "^18",
-    "uuid": "^9.0.1",
-    "ytdl-core": "^4.11.5"
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@types/node": "^20",

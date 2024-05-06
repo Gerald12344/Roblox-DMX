@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Slider from "../../../components/slider";
-import { lights, main } from "./page";
+import { main } from "./page";
 
 export default function EditScene({
   currentSceneInfo,
