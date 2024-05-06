@@ -1,25 +1,26 @@
-const { createServer } = require("http");
-const { parse } = require("url");
-const next = require("next");
-const { readdirSync } = require("fs");
-const { join } = require("path");
+/**
+ *  This is the production entry point
+ *  The app is written in NextJS so a custom server is required for self hosting
+ *  -- Gerald
+ */
 
-const dev = false;
-const hostname = "localhost";
+import { createServer } from "http";
+import { parse } from "url";
+import open from "open";
+import next from "next";
+import ip from "ip";
+
+const hostname = ip.address();
 const port = 3000;
 
-// when using middleware `hostname` and `port` must be provided below
-const app = next({ dev, hostname, port, dir: __dirname, conf: {} });
+const app = next({ dev: false, hostname, port });
 
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   createServer(async (req, res) => {
     try {
-      // Be sure to pass `true` as the second argument to `url.parse`.
-      // This tells it to parse the query portion of the URL.
       const parsedUrl = parse(req.url, true);
-      const { pathname, query } = parsedUrl;
 
       await handle(req, res, parsedUrl);
     } catch (err) {
@@ -34,5 +35,6 @@ app.prepare().then(() => {
     })
     .listen(port, () => {
       console.log(`> Ready on http://${hostname}:${port}`);
+      open(`http://${hostname}:${port}`);
     });
 });
